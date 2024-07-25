@@ -24,68 +24,7 @@ def main():
         st.session_state.conversation = None
 
     if "chat_history" not in st.session_state:
-        st.session_state.chat_history = None
-
-    if "processComplete" not in st.session_state:
-        st.session_state.processComplete = False
-
-    if 'messages' not in st.session_state:
-        st.session_state['messages'] = [{"role": "assistant", "content": "안녕하세요! 대진대학교 조직행동론 강의에 관한 질문 챗봇입니다! 질문을 입력해주세요!"}]
-
-    with st.sidebar:
-        openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
-        process = st.button("Process")
-
-    if process:
-        if not openai_api_key:
-            st.info("Please add your OpenAI API key to continue.")
-            st.stop()
-        files_text = get_predefined_text()
-        text_chunks = get_text_chunks(files_text)
-        vectorstore = get_vectorstore(text_chunks)
-
-        st.session_state.conversation = get_conversation_chain(vectorstore, openai_api_key)
-        st.session_state.processComplete = True
-
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    history = StreamlitChatMessageHistory(key="chat_messages")
-
-    # Chat logic
-    if query := st.chat_input("질문을 입력해주세요."):
-        st.session_state.messages.append({"role": "user", "content": query})
-
-        with st.chat_message("user"):
-            st.markdown(query)
-
-        if st.session_state.processComplete:
-            with st.chat_message("assistant"):
-                chain = st.session_state.conversation
-
-                with st.spinner("답변 생성중..."):
-                    with get_openai_callback() as cb:
-                        result = chain({"question": query})
-                        st.session_state.chat_history = result['chat_history']
-                    response = result['answer']
-                    source_documents = result.get('source_documents', [])
-
-                    st.markdown(response)
-                    with st.expander("참고 문서 확인"):
-                        for doc in source_documents:
-                            st.markdown(f"{doc.metadata['source']}", help=doc.page_content)
-
-                # Add assistant message to chat history
-                st.session_state.messages.append({"role": "assistant", "content": response})
-
-def tiktoken_len(text):
-    tokenizer = tiktoken.get_encoding("cl100k_base")
-    tokens = tokenizer.encode(text)
-    return len(tokens)
-
-def get_predefined_text():
-    loader = PyPDFLoader("/content/drive/MyDrive/BOK이슈노트제2023-26호_수출입경로를 통한 해외 기후변화 물리적 리스크의 국내 파급영향.pdf")
+        st.session_state.chat_history = No론.pdf")
     documents = loader.load_and_split()
     return documents
 
